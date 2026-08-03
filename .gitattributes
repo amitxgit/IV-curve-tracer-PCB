@@ -1,0 +1,6 @@
+# Normalize line endings: store LF in the repo, check out native on Windows.
+* text=auto
+
+# Keep these as LF even on Windows (shell scripts, service files)
+*.sh   text eol=lf
+*.service text eol=lf
