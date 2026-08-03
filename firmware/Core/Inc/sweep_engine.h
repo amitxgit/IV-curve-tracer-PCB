@@ -13,6 +13,11 @@ typedef struct {
 void SweepEngine_SetConfig(const SweepConfig *cfg);
 void SweepEngine_GetConfig(SweepConfig *cfgOut);
 
+/* Restores the sweep configuration to its power-on defaults.
+ * Called by the SCPI *RST handler so a reset returns the sweep
+ * parameters to a known state, not just the DAC output. */
+void SweepEngine_Reset(void);
+
 /* Runs the configured sweep synchronously, calling txLineFn once per
  * point with a "V,I\r\n" formatted line, then once more with "END\r\n".
  * Passing the transmit function in as a pointer keeps this file free

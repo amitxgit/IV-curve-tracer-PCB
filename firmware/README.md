@@ -29,7 +29,7 @@ generated project, not a replacement for one.
    merge alongside, not replace, CubeMX's generated files).
 5. Wire up the one integration point: in the generated
    `usbd_cdc_if.c`, inside `CDC_Receive_FS()`, append received bytes
-   to a line buffer and call `scpi_process_line()` (declared in
+   to a line buffer and call `SCPI_ProcessLine()` (declared in
    `scpi_parser.h`) whenever a `\n` is received. That's the entire
    USB integration -- everything else in this folder is
    hardware-agnostic application code.

@@ -28,12 +28,15 @@ knows the sweep is complete without needing a fixed point count in
 advance.
 
 ## Error handling
-Any malformed command should respond with a single line:
+Any malformed command responds immediately with a single line:
 ```
 ERR,"unrecognized command"
 ```
 so the PC client can detect and log parser failures instead of hanging
-on a missing response.
+on a missing response. The same failure is also recorded in a one-deep
+error queue: a subsequent `SYST:ERR?` returns `-100,"unrecognized
+command"` and reading it clears the queue back to `0,"No error"`
+(standard SCPI semantics). `*RST` also clears the queue.
 
 ## Design rationale
 This deliberately mirrors the subset of real SCPI (`SOUR:`, `MEAS:`,

@@ -12,9 +12,12 @@ from .instrument import SCPIInstrument
 VT_ROOM_TEMP = 0.02585  # thermal voltage at ~300K, volts
 
 
-def run_iv_sweep(port: str, start: float, stop: float, step: float, dwell_ms: int = 10):
-    """Runs a full sweep and returns (voltages, currents) as numpy arrays."""
-    with SCPIInstrument(port) as instr:
+def run_iv_sweep(port: str, start: float, stop: float, step: float, dwell_ms: int = 10,
+                 transport=None):
+    """Runs a full sweep and returns (voltages, currents) as numpy arrays.
+    Pass `transport` (e.g. an iv_tracer.simulator.SimulatedSerial) to run
+    against the simulator instead of a real serial port."""
+    with SCPIInstrument(port, transport=transport) as instr:
         print("Connected to:", instr.idn())
         instr.configure_sweep(start, stop, step, dwell_ms)
         voltages, currents = instr.run_sweep()

@@ -5,6 +5,26 @@
 pip install -r requirements.txt
 ```
 
+## Try it with no hardware (simulator)
+The client ships with a simulator that speaks the exact SCPI wire
+protocol the firmware does, so you can run the whole pipeline before
+the board exists. It models the DUT *and* the 150R current-limit
+resistor, so the reported voltage shows the real Kelvin-sense effect.
+```bash
+# Simulated silicon diode, sweep the knee region
+python -m iv_tracer.cli --simulate --sim-dut diode --start 0 --stop 0.8 --step 0.01 --plot --save diode.csv
+
+# Simulated 1k resistor -- measured slope recovers R (minus the R_limit drop)
+python -m iv_tracer.cli --simulate --sim-dut resistor --sim-resistance 1000 --start 0 --stop 3 --step 0.1 --plot
+```
+Drop `--simulate` and add `--port COM5` (or `/dev/ttyACM0`) to talk to
+real hardware -- the client code is identical either way.
+
+## Run the tests
+```bash
+pytest            # all tests run against the simulator, no hardware needed
+```
+
 ## Quick sweep + plot
 ```bash
 python -m iv_tracer.cli --port /dev/ttyACM0 --start 0 --stop 3 --step 0.05 --dwell 10 --plot --save diode.csv

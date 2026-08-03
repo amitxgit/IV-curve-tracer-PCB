@@ -1,10 +1,10 @@
 from __future__ import annotations
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def plot_iv(voltages: np.ndarray, currents: np.ndarray, title: str = "I-V Curve", fitted=None):
+    import matplotlib.pyplot as plt  # lazy: only needed when actually plotting
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.plot(voltages, currents * 1000, "o", markersize=3, label="Measured")
     if fitted is not None:

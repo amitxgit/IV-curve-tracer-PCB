@@ -6,14 +6,23 @@ just talking to hardware you built yourself.
 """
 
 from __future__ import annotations
-import serial
 import time
 
 
 class SCPIInstrument:
-    def __init__(self, port: str, baudrate: int = 115200, timeout: float = 2.0):
-        self._ser = serial.Serial(port, baudrate=baudrate, timeout=timeout)
-        time.sleep(2.0)  # let USB-CDC enumerate / MCU settle after port open
+    def __init__(self, port: str, baudrate: int = 115200, timeout: float = 2.0,
+                 transport=None):
+        """Open the instrument over a serial port, or drive an injected
+        transport instead. `transport` is any object exposing the
+        write / readline / close surface of `serial.Serial` -- pass an
+        `iv_tracer.simulator.SimulatedSerial` to run with no hardware.
+        When a transport is given, `port`/`baudrate` are ignored."""
+        if transport is not None:
+            self._ser = transport
+        else:
+            import serial  # imported lazily so the sim path needs no pyserial
+            self._ser = serial.Serial(port, baudrate=baudrate, timeout=timeout)
+            time.sleep(2.0)  # let USB-CDC enumerate / MCU settle after port open
 
     def close(self) -> None:
         self._ser.close()

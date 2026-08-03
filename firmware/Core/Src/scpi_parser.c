@@ -10,6 +10,26 @@
 
 #define FW_IDN_STRING  "IV-TRACER,v1.0,SN001\r\n"
 
+/* Single-entry error record backing SYST:ERR?. Real SCPI instruments
+ * keep a FIFO; one deep is enough here and matches how the PC client
+ * polls (query after each command). Reading it clears it, per SCPI. */
+static int  s_errCode = 0;
+static char s_errMsg[48] = "No error";
+
+static void SetError(int code, const char *msg)
+{
+    s_errCode = code;
+    strncpy(s_errMsg, msg, sizeof(s_errMsg) - 1);
+    s_errMsg[sizeof(s_errMsg) - 1] = '\0';
+}
+
+static void ClearError(void)
+{
+    s_errCode = 0;
+    strncpy(s_errMsg, "No error", sizeof(s_errMsg) - 1);
+    s_errMsg[sizeof(s_errMsg) - 1] = '\0';
+}
+
 static void Transmit(const char *s)
 {
     CDC_Transmit_FS((uint8_t *)s, (uint16_t)strlen(s));
@@ -19,6 +39,16 @@ static void ReplyFloat(float value)
 {
     char buf[32];
     snprintf(buf, sizeof(buf), "%.4f\r\n", value);
+    Transmit(buf);
+}
+
+/* Currents are uA-mA scale for diodes/small-signal parts, so 4 decimals
+ * would floor sub-100uA readings to 0.0000. Use 6 decimals to match the
+ * sweep stream format and the MEAS:CURR? example in the SCPI reference. */
+static void ReplyCurrent(float amps)
+{
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%.6f\r\n", amps);
     Transmit(buf);
 }
 
@@ -36,6 +66,8 @@ void SCPI_ProcessLine(const char *line)
     }
     else if (strcmp(line, "*RST") == 0) {
         DAC_SetVoltage(0.0f);
+        SweepEngine_Reset();
+        ClearError();
     }
     else if (strncmp(line, "SOUR:VOLT?", 10) == 0) {
         ReplyFloat(DAC_GetLastCommandedVoltage());
@@ -71,12 +103,16 @@ void SCPI_ProcessLine(const char *line)
         ReplyFloat(ADS1115_ReadVoltage(ADS1115_CH0_SINGLE_ENDED));
     }
     else if (strcmp(line, "MEAS:CURR?") == 0) {
-        ReplyFloat(INA219_ReadCurrentAmps());
+        ReplyCurrent(INA219_ReadCurrentAmps());
     }
     else if (strcmp(line, "SYST:ERR?") == 0) {
-        Transmit("0,\"No error\"\r\n");
+        char buf[64];
+        snprintf(buf, sizeof(buf), "%d,\"%s\"\r\n", s_errCode, s_errMsg);
+        Transmit(buf);
+        ClearError();
     }
     else {
+        SetError(-100, "unrecognized command");
         Transmit("ERR,\"unrecognized command\"\r\n");
     }
 }
