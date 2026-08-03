@@ -1,41 +1,36 @@
 #include "dac_driver.h"
 
-/* MCP4922 16-bit write frame layout (channel A, buffered, gain=1, active):
- *  bit15    bit14   bit13  bit12  bit11..0
- *  A/B      BUF     GA     SHDN   D11..D0
- *  0        1       1      1      12-bit code
- * (A/B=0 selects DAC A, which is what VoutA / the sweep output uses)
+/* MCP4725 "fast mode" write: two bytes carry the 12-bit code.
+ *   byte0:  0 0 PD1 PD0 D11 D10 D9 D8   (PD1=PD0=0 -> normal power-up)
+ *   byte1:  D7 D6 D5 D4 D3 D2 D1 D0
+ * This updates the DAC register (not EEPROM), which is what we want for
+ * a fast sweep -- we never wear out the EEPROM. See MCP4725 datasheet
+ * section 6.1. For the command-type write (with EEPROM) you'd send a
+ * 0x40/0x60 command byte first; we deliberately avoid that here.
  */
-#define MCP4922_CMD_CHA_BUF_GAIN1_ACTIVE  (0x3000u)
 
-extern SPI_HandleTypeDef hspi1; /* provided by CubeMX-generated code */
+extern I2C_HandleTypeDef hi2c1; /* provided by CubeMX-generated code */
 
 static float s_lastCommandedVoltage = 0.0f;
 
-static void CS_Low(void)  { HAL_GPIO_WritePin(DAC_CS_GPIO_Port, DAC_CS_Pin, GPIO_PIN_RESET); }
-static void CS_High(void) { HAL_GPIO_WritePin(DAC_CS_GPIO_Port, DAC_CS_Pin, GPIO_PIN_SET);   }
-
 void DAC_Init(void)
 {
-    CS_High();
     DAC_SetVoltage(0.0f);
 }
 
 void DAC_SetVoltage(float volts)
 {
-    if (volts < 0.0f)            volts = 0.0f;
-    if (volts > DAC_VREF_VOLTS)  volts = DAC_VREF_VOLTS;
+    if (volts < 0.0f)           volts = 0.0f;
+    if (volts > DAC_VDD_VOLTS)  volts = DAC_VDD_VOLTS;
 
-    uint16_t code = (uint16_t)((volts / DAC_VREF_VOLTS) * DAC_MAX_CODE + 0.5f);
-    uint16_t frame = MCP4922_CMD_CHA_BUF_GAIN1_ACTIVE | (code & 0x0FFFu);
+    uint16_t code = (uint16_t)((volts / DAC_VDD_VOLTS) * DAC_MAX_CODE + 0.5f);
+    if (code > DAC_MAX_CODE) code = DAC_MAX_CODE;
 
     uint8_t txBuf[2];
-    txBuf[0] = (uint8_t)(frame >> 8);
-    txBuf[1] = (uint8_t)(frame & 0xFF);
+    txBuf[0] = (uint8_t)((code >> 8) & 0x0F); /* fast-mode: PD bits 0, top nibble */
+    txBuf[1] = (uint8_t)(code & 0xFF);
 
-    CS_Low();
-    HAL_SPI_Transmit(&hspi1, txBuf, 2, HAL_MAX_DELAY);
-    CS_High();
+    HAL_I2C_Master_Transmit(&hi2c1, MCP4725_I2C_ADDR, txBuf, 2, HAL_MAX_DELAY);
 
     s_lastCommandedVoltage = volts;
 }

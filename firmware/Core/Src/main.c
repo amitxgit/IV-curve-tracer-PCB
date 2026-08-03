@@ -3,27 +3,28 @@
  * with this; merge these calls into it instead. See firmware/README.md.
  *
  * Generated sections (USER CODE BEGIN/END blocks, peripheral init
- * calls like MX_SPI1_Init(), MX_I2C1_Init(), MX_USB_DEVICE_Init())
- * are omitted here for clarity -- they come from CubeMX and should
- * be left exactly as generated.
+ * calls like MX_I2C1_Init(), MX_I2C2_Init(), MX_ADC1_Init(),
+ * MX_USB_DEVICE_Init()) are omitted here for clarity -- they come from
+ * CubeMX and should be left exactly as generated.
  */
 
 #include "main.h"
 #include "dac_driver.h"
 #include "ina219_driver.h"
-#include "ads1115_driver.h"
+#include "adc_driver.h"
 
 int main(void)
 {
     /* --- CubeMX-generated init calls go here, unmodified --- */
     /* HAL_Init(); SystemClock_Config(); MX_GPIO_Init();
-     * MX_SPI1_Init(); MX_I2C1_Init(); MX_USB_DEVICE_Init(); */
+     * MX_I2C1_Init(); MX_I2C2_Init(); MX_ADC1_Init();
+     * MX_USB_DEVICE_Init(); */
 
     /* --- Application init: add these three lines after the
      *     generated init calls above --- */
     DAC_Init();
     INA219_Init();
-    ADS1115_Init();
+    ADC_Init();
 
     while (1)
     {

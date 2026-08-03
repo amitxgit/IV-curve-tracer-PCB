@@ -1,7 +1,7 @@
 #include "sweep_engine.h"
 #include "dac_driver.h"
 #include "ina219_driver.h"
-#include "ads1115_driver.h"
+#include "adc_driver.h"
 #include <stdio.h>
 
 /* Sensible defaults; overwritten by SOUR:SWE:* commands before RUN */
@@ -49,7 +49,7 @@ void SweepEngine_Run(void (*txLineFn)(const char *line))
         DAC_SetVoltage(v);
         HAL_Delay(s_cfg.dwellMs);
 
-        float vMeasured = ADS1115_ReadVoltage(ADS1115_CH0_SINGLE_ENDED); /* Kelvin sense */
+        float vMeasured = ADC_ReadVoltage(); /* Kelvin sense via STM32 ADC + divider */
         float iMeasured = INA219_ReadCurrentAmps();
 
         int len = snprintf(line, sizeof(line), "%.4f,%.6f\r\n", vMeasured, iMeasured);

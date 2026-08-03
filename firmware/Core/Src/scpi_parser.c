@@ -1,7 +1,7 @@
 #include "scpi_parser.h"
 #include "dac_driver.h"
 #include "ina219_driver.h"
-#include "ads1115_driver.h"
+#include "adc_driver.h"
 #include "sweep_engine.h"
 #include "usbd_cdc_if.h" /* CubeMX-generated -- provides CDC_Transmit_FS */
 #include <string.h>
@@ -100,7 +100,7 @@ void SCPI_ProcessLine(const char *line)
         SweepEngine_Run(Transmit);
     }
     else if (strcmp(line, "MEAS:VOLT?") == 0) {
-        ReplyFloat(ADS1115_ReadVoltage(ADS1115_CH0_SINGLE_ENDED));
+        ReplyFloat(ADC_ReadVoltage());
     }
     else if (strcmp(line, "MEAS:CURR?") == 0) {
         ReplyCurrent(INA219_ReadCurrentAmps());
