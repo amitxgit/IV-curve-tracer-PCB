@@ -1,0 +1,10 @@
+Hardware design files in this repository (schematics, PCB layout, BOM)
+are intended to be released under the CERN Open Hardware Licence
+Version 2 - Permissive (CERN-OHL-P-2.0).
+
+Full license text: https://ohwr.org/cern_ohl_p_v2.txt
+
+Using an OSHWA-recognized open hardware license is a prerequisite if
+you later pursue a HardwareX submission (see docs/validation_plan.md
+and the earlier discussion on publication routes) -- attach this file
+alongside your actual KiCad project once it's committed.

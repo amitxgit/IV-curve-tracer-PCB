@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Data / outputs captured during validation runs
+*.csv
+!docs/BOM.csv
+*.png
+*.jpg
+!docs/**/*.png
+data/
+captures/
+
+# STM32CubeIDE generated build artifacts (firmware here is app-logic only,
+# not a full CubeIDE project -- but ignore these in case one is added)
+Debug/
+Release/
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+.settings/
+.cproject
+.project
+
+# KiCad backups / autosave / fab outputs
+*-backups/
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.bak
+fp-info-cache
+_autosave-*
+*.net
+gerbers/
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
