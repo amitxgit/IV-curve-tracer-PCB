@@ -56,7 +56,6 @@ python -m iv_tracer.cli --port /dev/ttyACM0 --start 0 --stop 5 --step 0.05 --dwe
 - [x] Python client: sweep/plot/CSV export
 - [x] Hardware-free simulator + pytest suite (run the full pipeline before the board exists)
 - [ ] Validation: known diode + known resistor vs datasheet/multimeter (on real hardware)
-- [ ] README + resume bullets + GitHub push
 
 ## Why this exists
 
