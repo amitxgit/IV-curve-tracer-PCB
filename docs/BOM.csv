@@ -1,28 +1,38 @@
-Ref,Component,Part Number (example),Package,Qty,Function,Owned?,Approx Price (INR)
-U1,STM32F103C8T6 dev board,Blue Pill / STM32F103C8T6 module,Module,1,MCU + native USB-CDC + internal 12-bit ADC (V-sense),Owned,180
-U2,12-bit I2C DAC,MCP4725 breakout,Breakout,2,Source voltage generation (ch0 used in v1; 2nd reserved for gate/base drive in dual-channel v2),Owned,0
-U3,Current shunt monitor,INA219 breakout (0.1R shunt),Breakout,1,Current sensing over I2C,Owned,0
-U4,Dual rail-to-rail op-amp,MCP6002 (or MCP6004 quad),DIP-8 / SOIC-8,1,DAC output buffer + gain stage,Buy,60
-U5,Boost converter,MT3608 module,Module,1,Op-amp/DAC supply rail for 0-10V output swing,Owned,0
-R1,Current-limit / sense resistor,150R 1% 1/4W,THT,1,Protects DUT + op-amp from fault current,Buy,10
-R2,V-sense divider top,30k 0.1% metal film,THT,1,Kelvin V-sense divider into STM32 ADC (with R3),Buy,15
-R3,V-sense divider bottom,10k 0.1% metal film,THT,1,Kelvin V-sense divider into STM32 ADC (with R2),Buy,15
-R4,Op-amp gain resistor pair,10k 0.1% metal film x2,THT,2,Sets non-inverting gain (=2 for 0-10V) -- omit/short for unity-gain buffer,Buy,30
-Rpu,I2C pull-ups,4.7k 1/4W,THT,4,SDA/SCL pull-ups on I2C1 and I2C2 (skip nets already pulled up on breakouts),Buy,10
-C1-C4,Decoupling capacitors,100nF ceramic,THT,4,Local supply decoupling per IC,Buy,20
-C5,Bulk capacitor,10uF electrolytic,THT,2,Supply rail bulk decoupling,Buy,20
-J1,DUT connector,Screw terminal or 4mm banana (Kelvin pair),THT,1 set,Device-under-test connection,Buy,120
-J2,Pin headers 2.54mm,Generic,THT,4 strips,Blue Pill carrier interconnect,Owned,40
-Vref,Precision voltage reference (optional),LM4040-4.096 or REF3040,TO-92 / SOT-23,1,Optional stable ADC reference for better V-sense accuracy (see DESIGN.md),Optional,40
-PCB,2-layer PCB fab,JLCPCB 5pcs min order,-,1,Carrier/shield board for above (after breadboard validation),Buy,800
+Ref,Component,Part Number (example),Package / Footprint,Qty,Function,Owned?,Approx Price (INR)
+A1,STM32F103C8T6 dev board,Blue Pill / STM32F103C8T6 module,Module (plugs into J1 + J2),1,MCU + native USB-CDC + internal 12-bit ADC (V-sense),Owned,180
+A2 A3,12-bit I2C DAC,MCP4725 breakout,Breakout (plugs into J3 / J4),2,A2 in J3 = source voltage (v1). A3 in J4 = gate/base drive (dual-channel v2),Owned,0
+A4,Current shunt monitor,INA219 breakout (0.1R shunt),Breakout (plugs into J5),1,Current sensing over I2C,Owned,0
+A5,Boost converter,MT3608 module,Module (wired to J8),1,~12V op-amp rail for the 0-10V range (off-board on flying leads),Owned,0
+U1,Dual rail-to-rail op-amp,MCP6002-E/P (5V only) or LM358P (for the 12V rail),DIP-8 in a socket,1,U1A source buffer / x2 gain. U1B gate-drive buffer,Buy,60
+J1 J2,Socket strip 1x20,2.54mm female header,THT,2,Blue Pill carrier sockets (rows 15.24mm apart),Owned,20
+J3 J4 J5,Socket strip 1x06,2.54mm female header,THT,3,Sockets for the two MCP4725 breakouts and the INA219 breakout,Owned,15
+J6 J7,Screw terminal 2-way,Phoenix MKDS 1.5/2 or any 5.0mm pitch,THT,2,J6 = DUT+ / DUT-. J7 = GATE / GND (v2),Buy,60
+J8,Pin header 1x04,2.54mm male header,THT,1,MT3608 hookup: 5V out / GND / GND / VBOOST in,Owned,5
+JP1,Pin header 1x03 + shunt,2.54mm male header,THT,1,Op-amp supply select: 1-2 = 5V / 2-3 = VBOOST,Owned,5
+JP2,Pin header 1x02 + shunt,2.54mm male header,THT,1,Gain select: open = x1 (0-5V) / closed = x2 (0-10V),Owned,5
+R1,Current-limit resistor,150R 1% 1/4W,Axial THT,1,Protects DUT + op-amp from fault current,Buy,10
+R2,V-sense divider top,30k 0.1% metal film,Axial THT,1,Kelvin V-sense divider into STM32 ADC (with R3),Buy,15
+R3,V-sense divider bottom,10k 0.1% metal film,Axial THT,1,Kelvin V-sense divider into STM32 ADC (with R2),Buy,15
+R4 R5,Op-amp gain resistors,10k 0.1% metal film,Axial THT,2,R4 feedback + R5 to GND through JP2 (gain = 2 when JP2 is closed),Buy,30
+R6 R7 R8 R9,I2C pull-ups,4.7k 1/4W,Axial THT,4,R6/R7 on I2C1 and R8/R9 on I2C2 -- fit only if the breakouts have none,Buy,10
+R10,Gate series resistor,1k 1/4W,Axial THT,1,Limits gate/base drive current (v2),Buy,3
+R11,Pull-down,100k 1/4W,Axial THT,1,Holds U1B input low when MCP4725 #1 is not fitted,Buy,3
+C1 C2 C3 C4,Decoupling capacitors,100nF ceramic,Disc/MLCC 5mm pitch,4,C1 = DAC #0 / C2 = DAC #1 / C3 = INA219 / C4 = op-amp,Buy,20
+C5 C6,Bulk capacitors,10uF electrolytic,Radial 5mm dia / 2mm pitch,2,C5 on 5V / C6 on the op-amp rail,Buy,20
+C7,ADC filter capacitor,100nF ceramic,Disc/MLCC 5mm pitch,1,Filters the V-sense divider node at PA0,Buy,5
+TP1-TP4,Test points,2mm THT pad (or a loop),THT,4,TP1 DAC0 out / TP2 buffer out / TP3 V-sense / TP4 GND,-,0
+H1-H4,Mounting holes,M3,3.2mm NPTH,4,Standoffs,-,0
+Vref,Precision voltage reference (optional),LM4040-4.096 or REF3040,TO-92 / SOT-23,1,Optional stable ADC reference for better V-sense accuracy (not on the v1.0 board),Optional,40
+PCB,2-layer PCB fab,JLCPCB 5pcs min order,99.1 x 69.9 mm,1,Carrier/shield board for above (after breadboard validation),Buy,800
 Misc,Wire/solder/flux/enclosure,-,-,-,General build materials,Owned,0
 
 Notes:
+- Refs match hardware/kicad/iv-curve-tracer-pcb (board rev 1.0). A1-A5 are the plug-in modules and are not symbols on the schematic -- the board only carries their sockets.
 - This BOM reflects the parts actually owned. It replaces the earlier MCP4922 (SPI DAC) + ADS1115 (16-bit ADC) design.
 - SOURCE = 2x MCP4725 (I2C DACs). Only channel 0 (one DAC) is used in single-channel v1; the second MCP4725 is reserved for gate/base drive in dual-channel v2 (MOSFET/BJT family-of-curves).
 - The two MCP4725 boards are split across the STM32's two hardware I2C buses (I2C1 + I2C2) so their I2C address is irrelevant even if both are jumpered identically. See docs/pin_mapping.md.
 - CURRENT MEASURE = INA219 (I2C). Coarse/wide range. With the stock 0.1R shunt, LSB ~ 100uA -- good for mA-A (LEDs, MOSFETs, BJTs), poor for sub-mA. See DESIGN.md "Limitations".
 - VOLTAGE MEASURE (Kelvin) = STM32 internal 12-bit ADC via a 30k/10k precision divider (replaces the ADS1115). Divider scales the 0-10V DUT node into the ADC's 0-3.3V range. Lower resolution than a 16-bit ADS1115 -- a documented, calibrated tradeoff, not an accident.
-- 0-10V output needs the op-amp powered from the MT3608 boost rail (set ~12V) and a gain of 2 (R4 pair). For a simpler first bring-up, run the DAC at VDD=5V, use the op-amp as a unity-gain buffer, and get a 0-5V range working first.
+- OP-AMP SUPPLY: the MCP6002 is a 6V-max part. Run it from 5V (JP1 1-2) with JP2 open for the 0-5V range. For the 0-10V range (JP1 2-3 on the ~12V MT3608 rail, JP2 closed) swap the socketed op-amp for a pin-compatible part rated for that rail, e.g. LM358.
 - Prices are rough INR estimates as of mid-2026; check current listings (Robu.in, element14, LCSC) before ordering.
 - Breakout modules (MCP4725, INA219) are used over bare ICs for v1 -- easier to hand-solder and debug; the carrier PCB treats them as pluggable modules with header pins.

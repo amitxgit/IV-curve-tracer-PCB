@@ -46,3 +46,8 @@ gerbers/
 Thumbs.db
 .vscode/
 *.swp
+
+# KiCad per-user state and local history
+*.kicad_prl
+.history/
+*.lck

@@ -23,6 +23,21 @@ iv-curve-tracer/
 └── LICENSE-SOFTWARE    MIT (firmware + PC client)
 ```
 
+## Hardware
+
+![Carrier board render](docs/images/pcb_3d.png)
+
+The carrier board takes a Blue Pill, two MCP4725 DAC breakouts and an
+INA219 breakout on sockets, and adds the op-amp buffer / gain stage,
+the current-limit resistor, the Kelvin V-sense divider and the DUT
+terminal. KiCad project: `hardware/kicad/iv-curve-tracer-pcb/`.
+Schematic PDF: `docs/schematic.pdf`. Build notes, jumper settings and
+module pin order: `hardware/schematic_notes.md`.
+
+| Top | Bottom |
+|-----|--------|
+| ![Top](docs/images/pcb_top.png) | ![Bottom](docs/images/pcb_bottom.png) |
+
 ## Quick start (once hardware is built)
 
 ```bash
@@ -33,7 +48,8 @@ python -m iv_tracer.cli --port /dev/ttyACM0 --start 0 --stop 5 --step 0.05 --dwe
 
 ## Project status
 
-- [ ] Schematic captured in KiCad
+- [x] Schematic captured in KiCad (ERC clean)
+- [x] PCB laid out, 2-layer carrier board rev 1.0 (DRC clean)
 - [ ] PCB fabricated (JLCPCB, 2-layer)
 - [ ] Firmware: DAC sweep + USB-CDC bring-up (drivers + SCPI parser + sweep engine written; needs on-board bring-up)
 - [x] Firmware: SCPI parser + sweep engine (with error queue + *RST state reset)

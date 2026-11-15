@@ -130,6 +130,24 @@ MCP4725 #0 (0x60) and INA219 (0x40) coexist on I2C1 -- different
 addresses, no conflict. The second MCP4725 lives alone on I2C2, so its
 identical 0x60 address never clashes.
 
+## Board connectors (rev 1.0)
+
+| Ref | What plugs in | Pins (pin 1 first) |
+|-----|---------------|--------------------|
+| J1  | Blue Pill, PB12 side | PB12 ... PB9, 5V, GND, 3V3 (pin 1 at the USB end) |
+| J2  | Blue Pill, GND side  | GND, GND, 3V3, NRST, PB11 ... PA0, PC15, PC14, PC13, VBAT (pin 1 at the USB end) |
+| J3  | MCP4725 #0 (source)  | OUT, GND, SCL, SDA, VCC, GND |
+| J4  | MCP4725 #1 (gate, v2)| OUT, GND, SCL, SDA, VCC, GND |
+| J5  | INA219               | VCC, GND, SCL, SDA, VIN-, VIN+ |
+| J6  | DUT                  | DUT+, DUT- (GND) |
+| J7  | Gate/base drive (v2) | GATE, GND |
+| J8  | MT3608 (flying leads)| 5V out, GND, GND, VBOOST in |
+| JP1 | Op-amp supply        | 5V, VOPAMP, VBOOST (1-2 = 5V, 2-3 = boost) |
+| JP2 | Gain                 | open = x1, closed = x2 |
+
+Breakout pin order differs between clone boards. Compare the table
+with the printing on your own modules before soldering the sockets.
+
 ## I2C pull-ups
 Most MCP4725/INA219 breakouts include SDA/SCL pull-ups. If you populate
 multiple modules on one bus you may end up with several pull-ups in
